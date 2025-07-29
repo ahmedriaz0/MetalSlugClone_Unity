@@ -235,6 +235,7 @@ MonoBehaviour:
   animator: {fileID: 7084337879367106671}
   jumpheight: 15
   movespeed: 5
+  playerhealth: 100
 --- !u!114 &2109807138118131802
 MonoBehaviour:
   m_ObjectHideFlags: 0
