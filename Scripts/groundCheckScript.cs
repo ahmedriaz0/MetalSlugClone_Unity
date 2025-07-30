@@ -5,7 +5,7 @@ public class groundCheckScript : MonoBehaviour
 {
     int contactCount = 0;
     Animator animator;
-    bool onGround = true;
+    bool onGround;
 
     private void Start()
     {
@@ -14,9 +14,9 @@ public class groundCheckScript : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if(collision.tag == "ground")
+        if (collision.tag == "ground" || collision.tag == "enemy")
         {
-            GameManager.Instance.player.GetComponent<PlayerMovement_Sliced>().onGround = true;
+            GameManager.Instance.player.GetComponent<PlayerController>().onGround = true;
             contactCount++;
             animator.SetBool("isGrounded", true);
         }
@@ -27,7 +27,7 @@ public class groundCheckScript : MonoBehaviour
         contactCount--;
         if(contactCount <= 0)
         {
-            GameManager.Instance.player.GetComponent<PlayerMovement_Sliced>().onGround = false;
+            GameManager.Instance.player.GetComponent<PlayerController>().onGround = false;
             animator.SetBool("isGrounded", false);
         }
     }

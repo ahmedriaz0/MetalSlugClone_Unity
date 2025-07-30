@@ -70,18 +70,5 @@ public class playermovement : MonoBehaviour
         }
     }
 
-    public void takedamage(float damage)
-    {
-        playerhealth -= damage;
-        if (playerhealth <= 0)
-        {
-            
-            die();
-        }
-    }
-
-    void die()
-    {
-        Destroy(gameObject);
-    }
+    
 }
