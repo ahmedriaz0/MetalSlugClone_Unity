@@ -95,7 +95,8 @@ public class enemyscript : MonoBehaviour
     {
         health -= damage;
         if(health <= 0 )
-        {   
+        {
+            isfiring = false;
             isalive = false;
             animator.SetBool("isrunning", false);
             die();

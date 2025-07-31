@@ -1,74 +1,68 @@
-using Unity.VisualScripting;
-using UnityEditor.Rendering;
 using UnityEngine;
-using UnityEngine.Rendering;
+using UnityEngine.InputSystem;
 
-public class playermovement : MonoBehaviour
+public class PlayerMovement : MonoBehaviour
 {
-    public Rigidbody2D player;
-    public Animator animator;
-    public float jumpheight = 10;
-    private bool onground = true;
-    private float movement;
-    
-    public float movespeed = 5;
-    private bool facingright = true;
-    public float playerhealth = 100;
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    public float speedMultiplier = 5f;
+    public float runSpeedThreshold = 0.01f;
+    public float jumpForce = 5f;
+
+    Rigidbody2D rb;
+    Animator animator;
+    bool onGround = true;
+
+    enum playerDirection { left, right};
+    playerDirection curDirection = playerDirection.right;
+    Vector2 movementInput;
+
+    void Awake()
     {
-        
+        animator = GetComponent<Animator>();    
+        rb = GetComponent<Rigidbody2D>();
     }
 
-    // Update is called once per frame
     void Update()
     {
-        movement = Input.GetAxis("Horizontal");
-        if(movement < 0 && facingright)
-        {
-            transform.eulerAngles = new Vector3(0 ,-180 ,0);
-            facingright = false;
-
-        }
-        else if(movement > 0 && facingright ==false )
-        {
-            transform.eulerAngles = new Vector3(0, 0, 0);
-            facingright = true;
-        }
-
-        if (Input.GetKeyDown(KeyCode.Space) && onground)
-        {
-            jump();
-            onground = false;   
-        }
-        if (Mathf.Abs(movement) > 0.1f)
-        {
-            animator.SetFloat("run", 1);
-        }
-        else if (movement < 0.1f)
-        {
-            animator.SetFloat("run", 0);
-        }
+        float speed = movementInput.magnitude;
+        animator.SetFloat("xVelocity", movementInput.magnitude);
+        rb.linearVelocityX = movementInput.x * speedMultiplier;
     }
 
-    private void FixedUpdate()
+    public void Move(InputAction.CallbackContext context)
     {
-        transform.position += new Vector3(movement, 0, 0) * Time.fixedDeltaTime * movespeed; 
+        movementInput = context.ReadValue<Vector2>();
+        curDirection = (movementInput.x >= 0)? playerDirection.right : playerDirection.left;
+
+        switch(curDirection)
+        {
+            case playerDirection.right:
+                transform.localScale = new Vector3(1, 1, 1);
+                break;
+            case playerDirection.left:
+                transform.localScale = new Vector3(-1, 1, 1);
+                break;
+        }
     }
 
-    void jump()
+    public void Jump(InputAction.CallbackContext context)
     {
-        animator.SetBool("jump" , true);
-        player.AddForce(new Vector2(0, jumpheight) , ForceMode2D.Impulse);
+        if(context.performed && onGround)
+        {
+            animator.SetBool("isJumping", true);
+            rb.linearVelocityY = jumpForce;
+            onGround = false;
+        }
     }
+
     private void OnCollisionEnter2D(Collision2D collision)
     {
         if(collision.gameObject.tag == "ground")
         {
-            onground = true; 
-            animator.SetBool("jump", false); 
+            animator.SetBool("isJumping", false);
+            onGround = true;
         }
     }
 
-    
+
+
 }

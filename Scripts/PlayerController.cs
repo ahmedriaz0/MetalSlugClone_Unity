@@ -39,7 +39,6 @@ public class PlayerController : MonoBehaviour
 
     void Update()
     {
-
         isIdle = speed > 0;
         rb.linearVelocityX = movementInput.x * speedMultiplier;
         if(isDead)

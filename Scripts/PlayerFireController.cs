@@ -4,17 +4,14 @@ using UnityEngine.InputSystem;
 public class PlayerFireController : MonoBehaviour
 {
     public GameObject bullet = null;
-    public float firerate = 0.2f;
-
+    public float firerate = 0.2f;   
     public float sideOffset;
     public float sideVerticalOffset;
-    public AudioSource src;
-    public AudioClip gunshot_mp3;
     public float upOffset;
     public float horizontalOffset;
     public float downOffset;
-
-
+    public AudioSource src;
+    public AudioClip gunshot_mp3;
     bool isFiring = false;
     float fireCooldown = 0f;
 
@@ -80,17 +77,16 @@ public class PlayerFireController : MonoBehaviour
                 bulletRotation = Quaternion.Euler(0, 0, -90);
                 Debug.Log("Firing down");
                 break;
-
+            
         }
         gunshot();
         Instantiate(bullet, firepoint, bulletRotation);
     }
-    public void gunshot()
+
+    void gunshot()
     {
-        
         src.PlayOneShot(gunshot_mp3);
     }
-
     public void Fire(InputAction.CallbackContext context)
     {
         isFiring = context.performed;
