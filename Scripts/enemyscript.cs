@@ -21,7 +21,9 @@ public class enemyscript : MonoBehaviour
     public Transform firepoint;
     public GameObject bullet;
     public bool isfiring = false;
-    
+    public AudioSource src;
+    public AudioClip gunshot_mp3;
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -32,7 +34,12 @@ public class enemyscript : MonoBehaviour
 
     public void shoot()
     {
+        gunshot();
         Instantiate(bullet, firepoint.position, firepoint.rotation);
+    }
+    void gunshot()
+    {
+        src.PlayOneShot(gunshot_mp3);
     }
     // Update is called once per frame
     private void FixedUpdate()

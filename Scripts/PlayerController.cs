@@ -31,10 +31,14 @@ public class PlayerController : MonoBehaviour
 
     void Start()
     {
-        if (transform.localScale.x > 0)
-            curDirection = PlayerDirection.right;
-        else
-            curDirection = PlayerDirection.left;
+         
+        if (!isDead)
+        {
+            if (transform.localScale.x > 0)
+                curDirection = PlayerDirection.right;
+            else
+                curDirection = PlayerDirection.left;
+        }
     }
 
     void Update()
@@ -67,38 +71,41 @@ public class PlayerController : MonoBehaviour
 
     public void Move(InputAction.CallbackContext context)
     {
-        movementInput = context.ReadValue<Vector2>();
-        speed = Mathf.Abs(movementInput.x);
-
-        if (movementInput.x > 0)
-            curDirection = PlayerDirection.right;
-        if(movementInput.x < 0)
-            curDirection = PlayerDirection.left;
-
-        switch(curDirection)
+        if (!isDead)
         {
-            case PlayerDirection.right:
-                transform.localScale = new Vector3(1, 1, 1);
-                break;
-            case PlayerDirection.left:
-                transform.localScale = new Vector3(-1, 1, 1);
-                break;
+            movementInput = context.ReadValue<Vector2>();
+            speed = Mathf.Abs(movementInput.x);
+
+            if (movementInput.x > 0)
+                curDirection = PlayerDirection.right;
+            if (movementInput.x < 0)
+                curDirection = PlayerDirection.left;
+
+            switch (curDirection)
+            {
+                case PlayerDirection.right:
+                    transform.localScale = new Vector3(1, 1, 1);
+                    break;
+                case PlayerDirection.left:
+                    transform.localScale = new Vector3(-1, 1, 1);
+                    break;
+            }
+            Debug.Log("Cur dir chagned to" + ((curDirection == PlayerDirection.left) ? "left" : "right"));
+
+            aimUp = movementInput.y > 0.5f;
+            aimDown = movementInput.y < -0.5f;
+
+            if (aimUp)
+                aimDirection = AimDirection.up;
+            else if (aimDown)
+                aimDirection = AimDirection.down;
+            else aimDirection = AimDirection.side;
+
+            legs.GetComponent<Animator>().SetFloat("speed", speed);
+            legs.GetComponent<Animator>().SetBool("aiming", aimUp || aimDown);
+            torso.GetComponent<Animator>().SetBool("aimUp", aimUp);
+            torso.GetComponent<Animator>().SetBool("aimDown", aimDown);
         }
-        Debug.Log("Cur dir chagned to" + ((curDirection == PlayerDirection.left) ? "left" : "right"));
-
-        aimUp = movementInput.y > 0.5f;
-        aimDown = movementInput.y < -0.5f;
-
-        if (aimUp)
-            aimDirection = AimDirection.up;
-        else if (aimDown)
-            aimDirection = AimDirection.down;
-        else aimDirection = AimDirection.side;
-
-        legs.GetComponent<Animator>().SetFloat("speed", speed);
-        legs.GetComponent<Animator>().SetBool("aiming", aimUp || aimDown);
-        torso.GetComponent<Animator>().SetBool("aimUp", aimUp);
-        torso.GetComponent<Animator>().SetBool("aimDown", aimDown);
     }
 
     public void Jump(InputAction.CallbackContext context)
@@ -120,6 +127,8 @@ public class PlayerController : MonoBehaviour
 
     void die()
     {
+        PlayerFireController pf = GetComponent<PlayerFireController>();
+        pf.isdead = true;
         isDead = true;
     }
 }
