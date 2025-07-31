@@ -1,20 +1,18 @@
 using UnityEngine;
 using UnityEngine.UIElements;
 
-public class enemyscript : MonoBehaviour
+public class spawnedenemyscript : MonoBehaviour
 {
     public float health = 100;
-    
+
     public Animator animator;
-    private GameObject player;
-    public GameObject ptA;
-    public GameObject ptB;
+    public GameObject player;
     private Transform currentpt;
     public float speed;
     private Rigidbody2D rb;
     private bool isalive = true;
     bool facingright = true;
-    private bool playerdetected =false;
+    private bool playerdetected = false;
     public float shootCooldown = 1f;
     public float shootTimer = 0f;
     public Transform firepoint;
@@ -22,12 +20,14 @@ public class enemyscript : MonoBehaviour
     public bool isfiring = false;
     public AudioSource src;
     public AudioClip gunshot_mp3;
+    bool goidle=false;
+    
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
-        currentpt  = ptB.transform;
+        
         animator.SetBool("isrunning", true);
     }
 
@@ -43,28 +43,28 @@ public class enemyscript : MonoBehaviour
     // Update is called once per frame
     private void FixedUpdate()
     {
-        
-        
+
+
     }
     void Update()
     {
-        if(isfiring)
+        if (isfiring)
         {
             animator.SetBool("isfiring", true);
         }
-        else 
+        else
         {
             animator.SetBool("isfiring", false);
         }
         if (isalive && !playerdetected)
         {
-            translate();
+            faceplayer();
             isfiring = false;
         }
         if (playerdetected && isalive)
         {
-            
-            
+
+
             shootTimer -= Time.deltaTime;
             if (shootTimer <= 0f)
             {
@@ -72,35 +72,21 @@ public class enemyscript : MonoBehaviour
                 shoot();
                 shootTimer = shootCooldown;
             }
-            
+
         }
 
     }
 
-    void translate()
-    {
-        Vector2 point = currentpt.position - transform.position;
-        if(currentpt == ptB.transform)
-        {
-            rb.linearVelocity = new Vector2(speed, 0);
-        }
-        else
-        {
-            rb.linearVelocity = new Vector2(-speed, 0);
-        }
-
-        if (Vector2.Distance(transform.position, currentpt.position) < 1)
-        {
-            flip();
-            currentpt = (currentpt == ptB.transform) ? ptA.transform : ptB.transform;
-        }
-
+    
+    void translateleft() 
+    { 
+        rb.linearVelocity = new Vector2(-speed, 0);
     }
 
     public void takedamage(float damage)
     {
         health -= damage;
-        if(health <= 0 )
+        if (health <= 0)
         {
             isfiring = false;
             isalive = false;
@@ -115,7 +101,7 @@ public class enemyscript : MonoBehaviour
             transform.eulerAngles = new Vector3(0, -180, 0);
             facingright = false;
         }
-        else if (!facingright) 
+        else if (!facingright)
         {
             transform.eulerAngles = new Vector3(0, 0, 0);
             facingright = true;
@@ -160,37 +146,29 @@ public class enemyscript : MonoBehaviour
 
         float direction = player.transform.position.x - transform.position.x;
 
-        if (direction < 0 && facingright)
+        if (direction < 0)
         {
-            flip(); 
+            if (facingright) flip();
+            translateleft();
         }
-        else if (direction > 0 && !facingright)
+        else if (direction > 0)
         {
-            flip(); 
+            enemyspawner es = GetComponent<enemyspawner>();
+            es.inrange = false;
         }
     }
     private void OnTriggerExit2D(Collider2D hitinfo)
     {
 
         if (hitinfo.CompareTag("player"))
-        { 
-        playerdetected = false;
-        animator.SetBool("isrunning", true);
-            realignToPatrolDirection();
+        {
+            playerdetected = false;
+            animator.SetBool("isrunning", true);
+            
         }
     }
 
-    void realignToPatrolDirection()
-    {
-        if (currentpt == ptB.transform && !facingright)
-        {
-            flip(); 
-        }
-        else if (currentpt == ptA.transform && facingright)
-        {
-            flip(); 
-        }
-    }
+    
 
 
 }

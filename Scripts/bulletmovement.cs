@@ -21,6 +21,11 @@ public class bulletmovement : MonoBehaviour
         {
             enemy.takedamage(playerdamage);
         }
+        spawnedenemyscript spawnedenemy = hitInfo.GetComponent<spawnedenemyscript>();
+        if (spawnedenemy != null)
+        {
+            spawnedenemy.takedamage(playerdamage);
+        }
         Destroy(gameObject);    
     }
 

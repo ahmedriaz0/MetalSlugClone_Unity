@@ -14,7 +14,7 @@ public class groundCheckScript : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (collision.tag == "ground" || collision.tag == "enemy")
+        if (collision.tag == "ground" || collision.tag == "simple-enemy" || collision.tag == "spawned-enemy")
         {
             GameManager.Instance.player.GetComponent<PlayerController>().onGround = true;
             contactCount++;
